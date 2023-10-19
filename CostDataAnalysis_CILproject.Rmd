@@ -5,19 +5,15 @@ date: "January 21, 2020"
 output: word_document
 #output: pdf_document
 #output: html_document
-
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-#Objective: 
-
+#Objective:
 
 #Background:
-
-
 
 ```{r, include = FALSE}
 ## setup the file structure so that this markdown document is in the main project folder along with the other folders noted below
@@ -35,7 +31,6 @@ functions.dir <- "./functions" # directory for functions
 
 # Methods
 
-
 ```{r, echo = FALSE, include = FALSE}
 ##this chunk is used to format the data set. 
 ## can use it to make settings etc.
@@ -44,4 +39,3 @@ functions.dir <- "./functions" # directory for functions
 
 #CleanData <- FormatData(RawData)  # make a function to format the data
 ```
-

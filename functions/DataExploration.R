@@ -57,6 +57,5 @@ CostData <- RawData %>%
             Labor=sum(`includes labor costs`=='Y'), 
             Overhead=sum(`overhead included`=='Y'))
 
-
-
+View(CostData)
 
