@@ -59,3 +59,6 @@ CostData <- RawData %>%
 
 View(CostData)
 
+CleanData <- RawData
+
+
