@@ -59,6 +59,40 @@ CostData <- RawData %>%
 
 View(CostData)
 
-CleanData <- RawData
+######################################################
+## use mutate to create new columns based on others ##
+######################################################
 
+
+## new column that equals 1 if capital and labor costs are both included: 
+
+colnames(RawData) # see column names 
+
+RawData <- RawData %>% 
+  mutate(cap_lab_costs = ifelse(`includes capital costs` == "Y" & `includes labor costs` == "Y", 1, 0)) ## ifelse inputs are "statement", "print 1 if true", and "print 0 if false"
+
+## new column that specifies whether the spatial extent was a US state or not: 
+
+# great use of chat gpt is to generate these types of strings for you! 
+us_states <- c("Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", 
+               "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", 
+               "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", 
+               "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", 
+               "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", 
+               "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming")
+
+RawData <- RawData %>% 
+  mutate(us_state = ifelse(`spatial extent of study` %in% us_states, "US State", "Not US State")) ## %in% can be read as "is the object on the left contained in the object of strings on the right
+
+
+# new column to specify whether the word "protected area" is used in either the title or purpose of study
+RawData <- RawData %>% 
+  mutate(protected_areas = ifelse(str_detect(Title, "protected area") | str_detect(`purpose of study`, "protected area"), 1, 0)) ## | can be read as "or" 
+
+
+## example of how to write clean data
+
+
+
+#write.csv(RawData,paste(DataSource,"/CleanData.csv", sep = ""))
 
