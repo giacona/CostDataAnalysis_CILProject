@@ -95,11 +95,15 @@ RawData <- RawData %>%
 ## Gwen's attempt to remove only the numbers that are not years. I found this function called parse_number where i didn't even have to specify that i was looking for a number. It ends up with NAs everywhere there are no numbers but that should be ok because other lines of code will get them
 ## There are still some issues with the "3 month" field and the "7-14 yr estimate" field but hopefully we can get those with an additional line
 ## i also realized we will run into an issue if we all do ifelse where we overwrite each other's code when we put it together but we can deal with that next time
+RawData$duration <- RawData$`time frame of cost data`
+table(RawData$'duration')
+
+RawData <- RawData %>% 
+  mutate(duration = ifelse(duration %in% c("single year per country, but different countries were surveyed different years"), "1", duration))
 
 RawData <- RawData %>% 
   mutate(duration = ifelse(parse_number(`time frame of cost data`)<1000, parse_number(`time frame of cost data`),0))
-                       
+
 View(RawData[,c(13,31)]) # this is an easy way to look at just the columns i'm working on so that i can make sure my code is doing what i want
 
 #write.csv(RawData,paste(DataSource,"/CleanData.csv", sep = ""))
-
