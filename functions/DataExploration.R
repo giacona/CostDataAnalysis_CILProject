@@ -9,7 +9,7 @@ library(stringr)
 
 #read in raw data file
 
-RawData <- read_csv(paste(DataSource,"/CostPortal_20230918.csv", sep = "")) 
+RawData <- read_csv(paste(DataSource,"/CleanData.csv", sep = "")) 
 
 View(RawData) 
 
@@ -31,6 +31,34 @@ length(which(is.na(RawData$`Data Source`)))
 # action category
 table(RawData$`Conservation Action Category`)
 which(is.na(RawData$`Conservation Action Category`))
+
+# =========== currency column ==========
+which(is.na(RawData$Currency))
+unique(RawData$Currency)
+
+# if US then USD
+# if AU or A$ then AUD
+# if NZ then NZD
+
+
+#RawData %>% filter(grepl("US", Currency))
+length(unique(RawData$Currency))
+unique(RawData$Currency)
+
+data0 <- RawData
+RawData <- data0
+
+RawData[with(RawData, grepl("and", Currency)), ]$Currency <- 'two currencies'
+RawData[with(RawData, grepl("US", Currency)), ]$Currency <- 'USD'
+RawData[with(RawData, grepl("AU", Currency)), ]$Currency <- 'AUD'
+RawData[with(RawData, grepl("NZ", Currency)), ]$Currency <- 'NZD'
+RawData[with(RawData, grepl("uro", Currency)), ]$Currency <- 'Euro'
+RawData[with(RawData, grepl("€", Currency)), ]$Currency <- 'GBP'
+RawData[(RawData$Currency == "A$") & !is.na(RawData$Currency), ]$Currency <- "AUD"
+RawData[(RawData$Currency == "N$") & !is.na(RawData$Currency), ]$Currency <- "NGN" # not so sure
+RawData[(RawData$Currency == "two currencies") & !is.na(RawData$Currency), ]$Currency <- "two currencies (USD included)"
+unique(RawData$Currency)
+
 
 # time frame
 unique(RawData$`time frame of cost data`) # ugh, what a mess
@@ -61,9 +89,13 @@ CostData <- RawData %>%
 
 View(CostData)
 
+<<<<<<< Updated upstream
 ######################################################
 ## use mutate to create new columns based on others ##
 ######################################################
+=======
+# CleanData <- RawData
+>>>>>>> Stashed changes
 
 
 ## new column that equals 1 if capital and labor costs are both included: 
