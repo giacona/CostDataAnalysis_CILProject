@@ -55,7 +55,13 @@ CostData <- RawData %>%
   summarise(Capital=sum(`includes capital costs`=='Y'),
             Consumables=sum(`includes consumables costs`=='Y'),
             Labor=sum(`includes labor costs`=='Y'), 
-            Overhead=sum(`overhead included`=='Y'))
+            Overhead=sum(`overhead included`=='Y')
+                         
+
+# Filter the data frame to include only rows where 'your_column' has exactly four characters
+CostDatasingleyear <- RawData %>%
+  mutate(Time = ifelse(nchar(`time frame of cost data`) == 4, 1, 0))
+
 
 View(CostData)
 
@@ -95,4 +101,5 @@ RawData <- RawData %>%
 
 
 #write.csv(RawData,paste(DataSource,"/CleanData.csv", sep = ""))
+
 
