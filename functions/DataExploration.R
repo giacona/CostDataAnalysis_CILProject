@@ -4,6 +4,8 @@ DataSource <- "./data" # input raw dataset goes here
 
 #load the packages we need
 library(tidyverse)     ## install.packages("tidyverse")
+library(data.table)
+library(stringr)
 
 #read in raw data file
 
@@ -68,6 +70,8 @@ View(CostData)
 
 colnames(RawData) # see column names 
 
+
+
 RawData <- RawData %>% 
   mutate(cap_lab_costs = ifelse(`includes capital costs` == "Y" & `includes labor costs` == "Y", 1, 0)) ## ifelse inputs are "statement", "print 1 if true", and "print 0 if false"
 
@@ -83,6 +87,80 @@ us_states <- c("Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colora
 
 RawData <- RawData %>% 
   mutate(us_state = ifelse(`spatial extent of study` %in% us_states, "US State", "Not US State")) ## %in% can be read as "is the object on the left contained in the object of strings on the right
+
+# ========== time frame of cost data - dashes ========
+
+RawData$`Number of dashes` <- str_count(RawData$`time frame of cost data`, "-")
+unique(RawData$`Number of dashes`) # 0, NA, 1, 2
+
+RawData$`start year` <- NA
+RawData$`end year` <- NA
+RawData$`duration` <- NA
+
+#RawData[is.na(RawData$`Number of dashes`),]$`Number of dashes` = -1
+#unique(RawData$`Number of dashes`)
+
+RawData1 <- RawData[RawData$`Number of dashes` %in% c(1,2), ]
+RawData2 <- RawData[!RawData$`Number of dashes` %in% c(1,2), ]
+
+dealDash <- function(x, li_colnames, output){
+  
+  # get column numbers
+  col_dash <- grep("Number of dashes", li_colnames)
+  col_timeframe <- grep("time frame of cost data", li_colnames)
+  col_start <- grep("start year", li_colnames)
+  col_end <- grep("end year", li_colnames)
+  col_duration <- grep("duration", li_colnames)
+  
+  num_dash <- x[col_dash]
+  
+  if(num_dash == 1){
+    years = strsplit(x[col_timeframe], "-")[[1]]
+    
+    if((nchar(years[1])>=4)&(nchar(years[2])>=4)){ # to avoid NA from an exception row
+      y1 = as.numeric(str_sub(years[1], -4, -1))
+      y2 = as.numeric(str_sub(years[2], 1, 4))
+      yrs = y2-y1
+    } else{
+      y1 = NA
+      y2 = NA
+      yrs = gsub("[^0-9,-]", "", x[col_timeframe]) # a regular expression to remove all characters that are not a number or . or -
+    }
+    
+    x[col_start] = y1
+    x[col_end] = y2
+    x[col_duration] = yrs
+  } else if(num_dash == 2){
+    no_words = gsub("[^0-9,-]", "", x[col_timeframe]) # remove words
+    durations = strsplit(no_words, ",")[[1]]
+    duration1 = durations[1]
+    d1_years = strsplit(duration1, "-")[[1]]
+    
+    duration2 = durations[2]
+    d2_years = strsplit(duration2, "-")[[1]]
+    
+    y1 = c(as.numeric(d1_years[1]), as.numeric(d2_years[1]))
+    y2 = c(as.numeric(d1_years[2]), as.numeric(d2_years[2]))
+    yrs = y2-y1
+    
+    x[col_start] = paste(y1, collapse=',')
+    x[col_end] = paste(y2, collapse=',')
+    x[col_duration] = paste(yrs, collapse=',')
+  } else{
+    x[col_start] = 'unknown'
+    x[col_end] = 'unknown'
+    x[col_duration] = 'unknown'
+  } 
+  return(x)
+}
+
+RawData11 <- transpose(data.frame(apply(RawData1, 1, dealDash, colnames(RawData))))
+colnames(RawData11) = colnames(RawData)
+unique(RawData11$duration)
+
+RawDataTime <- rbind(RawData11, RawData2)
+
+
 
 
 # new column to specify whether the word "protected area" is used in either the title or purpose of study
