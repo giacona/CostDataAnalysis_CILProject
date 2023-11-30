@@ -1,7 +1,7 @@
 ---
-title: "Title"
-author: "Gwen Iacona"
-date: "January 21, 2020" 
+title: "Costing Portal Data Preliminary Analysis"
+author: "CIL Lab"
+date: "Nov 30, 2023" 
 output: word_document
 #output: pdf_document
 #output: html_document
@@ -12,8 +12,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 #Objective:
+As a lab group, we developed some code to clean the costing portal dataset
 
 #Background:
+The initial dataset was a mess!
 
 ```{r, include = FALSE}
 ## setup the file structure so that this markdown document is in the main project folder along with the other folders noted below
@@ -22,20 +24,31 @@ DataSource <- "./data" # input raw dataset goes here
 output.dir <-"./output" # output dataset writes to here
 functions.dir <- "./functions" # directory for functions 
 
-#source(file.path(functions.dir,'NewFunction.R')) # any functions that are called up by this markdown document need to be sourced here
+source(file.path(functions.dir,'FormatData.R')) # any functions that are called up by this markdown document need to be sourced here
 
 ## general functions that need to be read in. 
-#library(readr)
+library(readr)
+library(tidyverse)     ## install.packages("tidyverse")
+library(data.table)
+library(stringr)
 
 ```
 
 # Methods
+all we have done so far is standardize data fields for analysis. We did things like make assumptions about XXX, and define Y and Z.
 
 ```{r, echo = FALSE, include = FALSE}
 ##this chunk is used to format the data set. 
 ## can use it to make settings etc.
 
-#RawData <- read_csv(paste(DataSource,"/RawdataName.csv", sep = "")) 
+RawData <- read_csv(paste(DataSource,"/CostPortal_20230918.csv", sep = "")) 
 
-#CleanData <- FormatData(RawData)  # make a function to format the data
+EditedData <- FormatData(RawData)  # make a function to format the data
+
 ```
+# Results
+
+```{r}
+table(EditedData$Duration)
+```
+
