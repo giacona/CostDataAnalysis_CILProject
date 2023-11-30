@@ -9,7 +9,7 @@ library(stringr)
 
 #read in raw data file
 
-RawData <- read_csv(paste(DataSource,"/CleanData.csv", sep = "")) 
+RawData <- read_csv(paste(DataSource,"/CostPortal_20230918.csv", sep = "")) 
 
 View(RawData) 
 
@@ -208,12 +208,20 @@ RawData <- RawData %>%
 RawData$duration <- RawData$`time frame of cost data`
 table(RawData$'duration')
 
-RawData <- RawData %>% 
-  mutate(duration = ifelse(duration %in% c("single year per country, but different countries were surveyed different years"), "1", duration))
+#RawData <- RawData %>% 
+#  mutate(duration = ifelse(`time frame of cost data` %in% c("single year per country, but different countries were surveyed different years"), "1", duration))
 
-RawData <- RawData %>% 
-  mutate(duration = ifelse(parse_number(`time frame of cost data`)<1000, parse_number(`time frame of cost data`),0))
+#RawData <- RawData %>% 
+#  mutate(duration = ifelse(parse_number(`time frame of cost data`)<1000, parse_number(`time frame of cost data`),0))
 
-View(RawData[,c(13,31)]) # this is an easy way to look at just the columns i'm working on so that i can make sure my code is doing what i want
+# View(RawData[,c(14,30)]) # this is an easy way to look at just the columns i'm working on so that i can make sure my code is doing what i want
+
+## tidy up my previous attempt
+RawData <- RawData %>% 
+mutate(duration= case_when(
+  RawData$`time frame of cost data` %in% c("single year per country, but different countries were surveyed different years") ~ 1,
+  parse_number(`time frame of cost data`)<1000 ~ parse_number(`time frame of cost data`),
+ )
+)
 
 #write.csv(RawData,paste(DataSource,"/CleanData.csv", sep = ""))

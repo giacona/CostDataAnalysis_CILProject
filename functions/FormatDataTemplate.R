@@ -10,9 +10,8 @@ write.csv(RawData,paste(DataSource,"/EditedData.csv", sep = "")) # save the edit
 EditedData<- RawData # can use this location to call up saved file if processing is long. Also can do in main MD document
 
 
-XXXData <- EditedData
+PartnersData <- EditedData
 
-return(XXXData) # return indicates what will get spit out of the function and what will be accessible in the MD doc
+return(PartnersData) # return indicates what will get spit out of the function and what will be accessible in the MD doc
 
 }
-
