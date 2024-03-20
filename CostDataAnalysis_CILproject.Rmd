@@ -74,3 +74,9 @@ plot(EditedData$`Date Published`,EditedData$Duration,
      main = "Duration of reported cost datasets over time")
 ```
 
+```{r results='asis'}
+# try to return the plot
+plot_cac <- PlotConservationActionCategories(EditedData)
+
+```
+
