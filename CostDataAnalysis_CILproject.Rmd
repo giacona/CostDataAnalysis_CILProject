@@ -27,7 +27,7 @@ functions.dir <- "./functions" # directory for functions
 # any functions that are called up by this markdown document need to be sourced here
 source(file.path(functions.dir,'FormatData.R'))
 source(file.path(functions.dir,'SummarizeData.R'))
-
+source(file.path(functions.dir,'SummarizeData_RBL.R'))
 ## general functions that need to be read in. 
 library(readr)
 library(tidyverse)     ## install.packages("tidyverse")
@@ -59,13 +59,14 @@ We also explored the relationship between how many years of cost data were colle
 
 ```{r, include=FALSE}
 # read in summary data
-SummaryData <- SummarizeData(EditedData)
+#SummaryData <- SummarizeData(EditedData)
+SummaryData_RBL <- SummarizeData_RBL(EditedData)
 ```
 
 # Results
 ```{r results='asis'}
 # make into a pretty table
-kable(SummaryData)
+kable(SummaryData_RBL)
 ```
 
 ```{r}
