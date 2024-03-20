@@ -1,54 +1,76 @@
 ---
 title: "Costing Portal Data Preliminary Analysis"
 author: "CIL Lab"
-date: "Nov 30, 2023" 
+date: "`r Sys.Date()`" 
 output: word_document
 #output: pdf_document
 #output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
-#Objective:
+# Objective:
 As a lab group, we developed some code to clean the costing portal dataset
 
-#Background:
+# Background:
 The initial dataset was a mess!
 
-```{r, include = FALSE}
+```{r, include= FALSE}
 ## setup the file structure so that this markdown document is in the main project folder along with the other folders noted below
 
 DataSource <- "./data" # input raw dataset goes here
 output.dir <-"./output" # output dataset writes to here
 functions.dir <- "./functions" # directory for functions 
 
-source(file.path(functions.dir,'FormatData.R')) # any functions that are called up by this markdown document need to be sourced here
+# any functions that are called up by this markdown document need to be sourced here
+source(file.path(functions.dir,'FormatData.R'))
+source(file.path(functions.dir,'SummarizeData.R'))
 
 ## general functions that need to be read in. 
 library(readr)
 library(tidyverse)     ## install.packages("tidyverse")
 library(data.table)
 library(stringr)
+library(knitr)
 
 ```
 
 # Methods
-all we have done so far is standardize data fields for analysis. We did things like make assumptions about XXX, and define Y and Z.
+First we standardized data fields for analysis. We did things like make assumptions about XXX, and define Y and Z.
 
-```{r, echo = FALSE, include = FALSE}
+```{r include=FALSE}
 ##this chunk is used to format the data set. 
 ## can use it to make settings etc.
 
-RawData <- read_csv(paste(DataSource,"/CostPortal_20230918.csv", sep = "")) 
+FormatDataY <- "N" # set to Y if you want to run the format data function again
 
+if (FormatDataY == "Y"){
+RawData <- read_csv(paste(DataSource,"/CostPortal_20230918.csv", sep = "")) 
 EditedData <- FormatData(RawData)  # make a function to format the data
+} else {EditedData <- read_csv(paste(DataSource,"/EditedData.csv", sep = ""),show_col_types = FALSE)}
 
 ```
+
+We then performed some summary statistics to better understand the dataset. Specifically, we explored the number and proportion of studies that included cost data that involved protected area (PA) establishment or management costs, and also mention of the different categories of costs across the studies. 
+
+We also explored the relationship between how many years of cost data were collected for a study (its duration) and the time it was published.
+
+```{r, include=FALSE}
+# read in summary data
+SummaryData <- SummarizeData(EditedData)
+```
+
 # Results
+```{r results='asis'}
+# make into a pretty table
+kable(SummaryData)
+```
 
 ```{r}
-table(EditedData$Duration)
+plot(EditedData$`Date Published`,EditedData$Duration,
+     xlab = "Date Published", ylab = "Duration",
+     main = "Duration of reported cost datasets over time")
 ```
 

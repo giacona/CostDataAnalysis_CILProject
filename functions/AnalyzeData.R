@@ -4,6 +4,7 @@
 
 library(readr)
 library(tidyverse) 
+library(knitr)
 DataSource <- "./data" # input raw dataset goes here
 # read in clean data file
 EditedData <- read_csv(paste(DataSource,"/EditedData.csv", sep = "")) 
@@ -26,26 +27,69 @@ table(EditedData$protected_areas)
 #calculate proportion
 table(EditedData$protected_areas)[2]/sum(table(EditedData$protected_areas))
 
-## what proportion of the studies are exploring costs in the US vs elsewhere?
+## what proportion of the studies are exploring costs in the US vs elsewhere? -Tyler
 
 ## what is the distribution of numbers of papers across the different currencies reported?
 
-## what proportion of studies include capital costs?
 
-## what proportion of studies include consumable costs?
+## what proportion of studies include capital costs? - Rachel
+table(EditedData$`includes capital costs`)
+table(EditedData$`includes capital costs`)[3]/sum(table(EditedData$`includes capital costs`))
 
-## what proportion of studies include labor costs?
+## what proportion of studies include consumable costs? - Alice
+table(EditedData$`includes consumables costs`)
+table(EditedData$`includes consumables costs`)[3]/sum(table(EditedData$`includes consumables costs`))
 
-## what proportion of studies include overhead costs?
+## what proportion of studies include labor costs? -Taylor
+table(EditedData$`includes labor costs`)
+table(EditedData$`includes labor costs`)[3]/sum(table(EditedData$`includes labor costs`))
 
-## what proportion of studies include both capital and labor costs?
+## what proportion of studies include overhead costs? - Caitlin
+overheadcosts<-table(EditedData$`overhead included`)[2]/sum(table(EditedData$`overhead included`))
+overheadcosts <- round((overheadcosts *100), digits=2)
+print(paste("Proportion of Studies With Overhead Costs Is",overheadcosts, "%"))
+
+## what proportion of studies include both capital and labor costs? - Rebecca
+both_cap_lab<-  filter(EditedData,`includes capital costs`=="Y" & `includes labor costs`=="Y")
+dim(both_cap_lab)[1]/77
+
 
 ## what is the distribution of conservation action categories across the studies?
+table(EditedData$`Conservation Action Category`)
 
+barplot(table(EditedData$`Conservation Action Category`))
+
+par(mar=c(2,15,2,2))
+barplot(table(EditedData$`Conservation Action Category`),horiz = TRUE, las=1) 
 
 ## other questions require relating two columns of data
-
 # does the duration of reported cost datasets increase over time?
 plot(EditedData$`Date Published`,EditedData$Duration)
+
+
+# summarize different results into a table
+
+summarytabledata <- tibble(c("PA","capital costs","consumable costs","labor costs","overhead costs"),
+       c(table(EditedData$protected_areas)[2],
+         table(EditedData$`includes capital costs`)[3],
+         table(EditedData$`includes consumables costs`)[3],
+         table(EditedData$`includes labor costs`)[3],
+         table(EditedData$`overhead included`)[2]
+         ),
+       c(table(EditedData$protected_areas)[2]/sum(table(EditedData$protected_areas)),
+         table(EditedData$`includes capital costs`)[3]/sum(table(EditedData$`includes capital costs`)),
+         table(EditedData$`includes consumables costs`)[3]/sum(table(EditedData$`includes consumables costs`)),
+         table(EditedData$`includes labor costs`)[3]/sum(table(EditedData$`includes labor costs`)),
+         table(EditedData$`overhead included`)[2]/sum(table(EditedData$`overhead included`))
+         ),.name_repair = "unique")
+
+# assign names for interpretability
+names(summarytabledata)<-c("","count","percent")
+
+# make into a pretty table
+
+kable(summarytabledata)
+
+
 
 
