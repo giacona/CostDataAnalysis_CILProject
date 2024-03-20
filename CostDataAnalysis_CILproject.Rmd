@@ -28,6 +28,7 @@ functions.dir <- "./functions" # directory for functions
 source(file.path(functions.dir,'FormatData.R'))
 source(file.path(functions.dir,'SummarizeData.R'))
 source(file.path(functions.dir,'SummarizeData_RBL.R'))
+source(file.path(functions.dir,'PlotConservationActionCategories.R'))
 ## general functions that need to be read in. 
 library(readr)
 library(tidyverse)     ## install.packages("tidyverse")
