@@ -54,21 +54,28 @@ EditedData <- FormatData(RawData)  # make a function to format the data
 
 ```
 
-We then performed some summary statistics to better understand the dataset. Specifically, we explored the number and proportion of studies that included cost data that involved protected area (PA) establishment or management costs, and also mention of the different categories of costs across the studies. 
+We then performed some summary statistics to better understand the dataset. 
 
-We also explored the relationship between how many years of cost data were collected for a study (its duration) and the time it was published.
+Our dataset has `r dim(EditedData)[1]` rows and `r dim(EditedData)[2]` columns. There are `r dim(unique(EditedData[,3])[1])` years with studies, the oldest is from `r min(EditedData[,3],na.rm=T)`, the newest is from `r max(EditedData[,3],na.rm=T)`.
+
+Specifically, we explored the number and proportion of studies that included cost data that involved protected area (PA) establishment or management costs, and also mention of the different categories of costs across the studies. 
+
+
 
 ```{r, include=FALSE}
 # read in summary data
-#SummaryData <- SummarizeData(EditedData)
+SummaryData <- SummarizeData(EditedData)
 SummaryData_RBL <- SummarizeData_RBL(EditedData)
 ```
 
-# Results
+
 ```{r results='asis'}
 # make into a pretty table
 kable(SummaryData_RBL)
+kable(SummaryData)
 ```
+We explored the relationship between how many years of cost data were collected for a study (its duration) and the time it was published.
+
 
 ```{r}
 plot(EditedData$`Date Published`,EditedData$Duration,
@@ -76,9 +83,50 @@ plot(EditedData$`Date Published`,EditedData$Duration,
      main = "Duration of reported cost datasets over time")
 ```
 
+We also explored which conservation actions were described by the studies and how they were distributed.
+
 ```{r results='asis'}
 # try to return the plot
 plot_cac <- PlotConservationActionCategories(EditedData)
+
+```
+
+We also explored how some of the numeric variables related to each other. This is useful for exploring predictor variables. For instance, if we wanted to formulate a regression exploring how the variation in how many years of cost data were reported in a study (duration) was related to the date it was published, whether capital and labor costs were included and whether it described protected area establishment costs (these are the numeric variables we have at the moment, no hypothesis as to why these particular predictors). 
+
+```{r warning = FALSE, message = FALSE}
+
+#### Correlation Matrix of Predictors vs Responses #######
+## modified some code from http://handlesman.blogspot.com/2011/03/matrix-plot-with-confidence-intervals.html
+### don't know what all of the settings are for, but it seems to be plotting alright.
+# put histograms on the diagonal panel	
+panel.hist <- function (x,...)					# define a function that says what we want to plot in the diagonal
+{
+  usr <- par("usr"); on.exit(par(usr))			# usr is setting the coordinates of a plot
+  par(usr = c(usr[1:2],0,1.5))
+  h <- hist(x, plot = FALSE)
+  breaks <- h$breaks; nB <- length(breaks)			# make the hist 
+  y <- h$counts; y <- y/max(y)
+  rect(breaks[-nB], 0, breaks[-1], y, col="grey", ...)  # defines what the histogram is going to look like
+}
+
+
+## put correlations on the upper panels,
+panel.cor <- function(x, y, digits=2, prefix="", cex.cor, ...)
+{
+  usr <- par("usr"); on.exit(par(usr))
+  par(usr = c(0, 1, 0, 1))
+  r <- cor(x, y,use="everything")				
+  txt <- format(c(r, 0.123456789), digits=digits)[1]
+  prefix <- "r = "
+  rc <- cor.test(x,y,method = c("pearson"))				## calculate pearsons rho for upper grid
+  txt <- paste(prefix,txt,sep="")
+  text(0.5, 0.5, txt, cex = 1)
+}
+
+## plot a correlation matrix plot that uses the functions specified above to say what to plot where
+pairs(EditedData[,c(30,3,32,34)],lower.panel = panel.smooth, diag.panel=panel.hist,upper.panel=panel.cor)
+
+
 
 ```
 
